@@ -1,0 +1,32 @@
+services:
+  jiraclone.api:
+    image: ${DOCKER_REGISTRY-}jiracloneapi
+    container_name: jiraClone.api
+    depends_on:
+      - jiraClone.database
+    build:
+      context: .
+      dockerfile: JiraClone.API/Dockerfile
+    ports:
+       - "5000:5000"
+       - "5001:5001"
+    networks:
+      - app_network
+
+  jiraClone.database:
+     image: postgres:13
+     container_name: jiraClone.database
+     environment:
+      - POSTGRES_DB=jiraClone
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+     volumes:
+      - ./.containers/jiraClone-db:/var/lib/postgresql/data
+     ports:
+         - 5432:5432
+     networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
